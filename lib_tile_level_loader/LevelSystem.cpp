@@ -1,3 +1,4 @@
+//LevelSystem.cpp
 #include "LevelSystem.h"
 #include <fstream>
 
@@ -12,7 +13,15 @@ float LevelSystem::_tileSize(100.f);
 Vector2f LevelSystem::_offset(0.0f, 30.0f);
 vector<std::unique_ptr<sf::RectangleShape>> LevelSystem::_sprites;
 
+std::map<LevelSystem::Tile, sf::Color> LevelSystem::_colours = {
+        {LevelSystem::WALL, sf::Color::Black},
+        {LevelSystem::END, sf::Color::Green},
+        {LevelSystem::PLATFORM, sf::Color::Blue}
+        // Add other mappings as needed
+};
+
 void LevelSystem::loadLevelFile(const std::string& path, map<Tile, Color> colours, float tileSize) {
+
     _tileSize = tileSize;
     _colours = colours;
 

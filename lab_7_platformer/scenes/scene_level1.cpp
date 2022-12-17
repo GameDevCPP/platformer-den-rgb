@@ -1,3 +1,4 @@
+//scene_level1.cpp
 #include "scene_level1.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_sprite.h"
@@ -10,71 +11,62 @@ using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> player;
-static shared_ptr<Entity> player2;
-
 
 void Level1Scene::Load() {
-  cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/level_1.txt", 40.0f);
+    cout << " Scene 1 Load" << endl;
 
-  auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
-  ls::setOffset(Vector2f(0, ho));
+    LevelSystem::loadLevelFile("res/Level1.png", LevelSystem::_colours, 40.0f);
 
-  // Create player
-  {
-    player = makeEntity();
-    player2 = makeEntity();
-    player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-    player2->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
-    auto s = player->addComponent<ShapeComponent>();
-    auto s2 = player2->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-    s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(Vector2f(10.f, 10.f));
+    // Find the position of the first START tile and set the offset accordingly
+    auto startTiles = LevelSystem::findTiles(LevelSystem::START);
+    if (startTiles.size() > 0) {
+        auto ho = Engine::getWindowSize().y - (LevelSystem::getHeight() * 40.f);
+        LevelSystem::setOffset(Vector2f(0, ho));
 
-    s2->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-    s2->getShape().setFillColor(Color::Magenta);
-    s2->getShape().setOrigin(Vector2f(10.f, 10.f));
+        // Create player at the position of the first START tile
+        player = makeEntity();
+        player->setPosition(LevelSystem::getTilePosition(startTiles[0]));
+        auto s = player->addComponent<ShapeComponent>();
+        s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
+        s->getShape().setFillColor(Color::Magenta);
+        s->getShape().setOrigin(Vector2f(10.f, 15.f));
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
-    player2->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
-  }
-
-  // Add physics colliders to level tiles.
-  {
-    auto walls = ls::findTiles(ls::WALL);
-    for (auto w : walls) {
-      auto pos = ls::getTilePosition(w);
-      pos += Vector2f(20.f, 20.f); //offset to center
-      auto e = makeEntity();
-      e->setPosition(pos);
-      e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
     }
-  }
 
-  //Simulate long loading times
-  std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-  cout << " Scene 1 Load Done" << endl;
+    // Find all WALL tiles and add physics colliders to them
+    auto wallTiles = LevelSystem::findTiles(LevelSystem::WALL);
+    for (auto w : wallTiles) {
+        auto pos = LevelSystem::getTilePosition(w);
+        pos += Vector2f(20.f, 20.f); //offset to center
+        auto e = makeEntity();
+        e->setPosition(pos);
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+    }
 
-  setLoaded(true);
+    //Simulate long loading times
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    cout << " Scene 1 Load Done" << endl;
+
+    setLoaded(true);
 }
 
 void Level1Scene::UnLoad() {
-  cout << "Scene 1 Unload" << endl;
-  player.reset();
-  ls::unload();
-  Scene::UnLoad();
+    cout << "Scene 1 Unload" << endl;
+    player.reset();
+    LevelSystem::unload();
+    Scene::UnLoad();
 }
 
 void Level1Scene::Update(const double& dt) {
-
-  if (ls::getTileAt(player->getPosition()) == ls::END) {
-    Engine::ChangeScene((Scene*)&level2);
-  }
-  Scene::Update(dt);
+    // Check if player is on an END tile and change to the next scene if they are
+    if (LevelSystem::getTileAt(player->getPosition()) == LevelSystem::END) {
+//    Engine::ChangeScene((Scene*)&level2);
+    }
+    Scene::Update(dt);
 }
 
 void Level1Scene::Render() {
-  ls::render(Engine::GetWindow());
-  Scene::Render();
+    LevelSystem::render(Engine::GetWindow());
+    Scene::Render();
 }

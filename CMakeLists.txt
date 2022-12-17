@@ -44,7 +44,7 @@ link_directories("${CMAKE_BINARY_DIR}/lib/sfml/lib")
 #### Add Engine and our own library projects####
 
 file(GLOB_RECURSE RESOURCE_FILES "res/*.*")
-####
+#### Tile loader lib
 file(GLOB_RECURSE SOURCE_FILES engine/*.cpp engine/*.h)
 add_library(lib_engine STATIC ${SOURCE_FILES} ${RESOURCE_FILES})
 target_include_directories(lib_engine INTERFACE "${CMAKE_SOURCE_DIR}/engine/" PUBLIC SYSTEM ${B2D_INCS} )
@@ -57,7 +57,7 @@ target_include_directories(lib_maths INTERFACE "${CMAKE_SOURCE_DIR}/lib_maths" I
 
 ## Tile loader lib
 file(GLOB_RECURSE SOURCE_FILES lib_tile_level_loader/*.cpp lib_tile_level_loader/*.h)
-add_library(lib_tile_level_loader STATIC ${SOURCE_FILES} ${RESOURCE_FILES} lib_tile_level_loader/LevelLoader.h)
+add_library(lib_tile_level_loader STATIC ${SOURCE_FILES} ${RESOURCE_FILES})
 target_include_directories(lib_tile_level_loader INTERFACE "${CMAKE_SOURCE_DIR}/lib_tile_level_loader/" )
 target_link_libraries(lib_tile_level_loader lib_maths sfml-graphics)
 
@@ -89,5 +89,17 @@ set_target_properties(PRACTICAL_7_PLATFORMER
         PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(Configuration)
         )
+
+foreach(exe ${EXECUTABLES})
+    set_target_properties(${exe} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+            RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+            )
+    #add all SFML dlls to the output directory
+    add_custom_command(TARGET ${exe} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_BINARY_DIR}/lib/sfml/bin/"
+            $<TARGET_FILE_DIR:${exe}>)
+endforeach()
 
 #@@-
