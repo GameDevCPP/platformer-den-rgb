@@ -5,7 +5,7 @@
 using namespace std;
 using namespace sf;
 
-std::unique_ptr<LevelSystem::Tile[]> LevelSystem::_tiles;
+std::unique_ptr<LevelSystem::TILES[]> LevelSystem::_tiles;
 size_t LevelSystem::_width;
 size_t LevelSystem::_height;
 
@@ -13,15 +13,15 @@ float LevelSystem::_tileSize(100.f);
 Vector2f LevelSystem::_offset(0.0f, 30.0f);
 vector<std::unique_ptr<sf::RectangleShape>> LevelSystem::_sprites;
 
-std::map<LevelSystem::Tile, sf::Color> LevelSystem::_colours = {
-        {LevelSystem::WALL, sf::Color::Black},
+std::map<LevelSystem::TILES, sf::Color> LevelSystem::_colours = {
+        {LevelSystem::START, sf::Color::Red},
+        {LevelSystem::WALL, sf::Color::White},
         {LevelSystem::END, sf::Color::Green},
-        {LevelSystem::PLATFORM, sf::Color::Blue}
+        {LevelSystem::PLATFORM, sf::Color::Blue},
         // Add other mappings as needed
 };
 
-void LevelSystem::loadLevelFile(const std::string& path, map<Tile, Color> colours, float tileSize) {
-
+void LevelSystem::loadLevelFile(const std::string& path, map<TILES, Color> colours, float tileSize) {
     _tileSize = tileSize;
     _colours = colours;
 
@@ -36,7 +36,7 @@ void LevelSystem::loadLevelFile(const std::string& path, map<Tile, Color> colour
     _height = levelImage.getSize().y;
 
     // Create a new Tile array to store the level data
-    _tiles = std::make_unique<Tile[]>(_width * _height);
+    _tiles = std::make_unique<TILES[]>(_width * _height);
 
     // Iterate through each pixel in the image and determine the corresponding Tile based on its color
     for (size_t y = 0; y < _height; ++y) {
@@ -48,6 +48,8 @@ void LevelSystem::loadLevelFile(const std::string& path, map<Tile, Color> colour
                 _tiles[y * _width + x] = END;
             } else if (pixelColor == _colours[PLATFORM]) {
                 _tiles[y * _width + x] = PLATFORM;
+            } else if (pixelColor == _colours[START]) {
+                _tiles[y * _width + x] = START;
             } else {
                 _tiles[y * _width + x] = EMPTY;
             }
@@ -71,14 +73,14 @@ void LevelSystem::render(sf::RenderWindow& window) {
     }
 }
 
-LevelSystem::Tile LevelSystem::getTile(sf::Vector2ul p) {
+LevelSystem::TILES LevelSystem::getTile(sf::Vector2ul p) {
     if (p.x > _width || p.y > _height) {
         return TILES::EMPTY;
     }
     return _tiles[p.y * _width + p.x];
 }
 
-LevelSystem::Tile LevelSystem::getTileAt(sf::Vector2f p) {
+LevelSystem::TILES LevelSystem::getTileAt(sf::Vector2f p) {
     p -= _offset;
     p /= _tileSize;
     return getTile({(unsigned int)p.x, (unsigned int)p.y});
@@ -104,7 +106,7 @@ sf::Vector2f LevelSystem::getTilePosition(sf::Vector2ul p) {
     return Vector2f(p.x * _tileSize, p.y * _tileSize) + _offset;
 }
 
-vector<sf::Vector2ul> LevelSystem::findTiles(Tile t) {
+vector<sf::Vector2ul> LevelSystem::findTiles(TILES t) {
     vector<sf::Vector2ul> found;
     for (size_t y = 0; y < _height; ++y) {
         for (size_t x = 0; x < _width; ++x) {
@@ -140,7 +142,7 @@ void LevelSystem::buildSprites(bool optimise) {
     const auto tls = Vector2f(_tileSize, _tileSize);
     for (size_t y = 0; y < _height; ++y) {
         for (size_t x = 0; x < _width; ++x) {
-            Tile t = getTile({x, y});
+            TILES t = getTile({x, y});
             if (t == EMPTY) {
                 continue;
             }

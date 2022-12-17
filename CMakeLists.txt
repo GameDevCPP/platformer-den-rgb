@@ -98,7 +98,7 @@ foreach(exe ${EXECUTABLES})
     #add all SFML dlls to the output directory
     add_custom_command(TARGET ${exe} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_BINARY_DIR}/lib/sfml/bin/"
+            "${CMAKE_BINARY_DIR}/lib/sfml/lib/"
             $<TARGET_FILE_DIR:${exe}>)
 endforeach()
 

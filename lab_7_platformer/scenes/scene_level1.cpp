@@ -15,11 +15,13 @@ static shared_ptr<Entity> player;
 void Level1Scene::Load() {
     cout << " Scene 1 Load" << endl;
 
-    LevelSystem::loadLevelFile("res/Level1.png", LevelSystem::_colours, 40.0f);
+    LevelSystem::loadLevelFile("res/L5.png", LevelSystem::_colours, 40.0f);
 
     // Find the position of the first START tile and set the offset accordingly
+
     auto startTiles = LevelSystem::findTiles(LevelSystem::START);
     if (startTiles.size() > 0) {
+        cout<<"start biger then 0";
         auto ho = Engine::getWindowSize().y - (LevelSystem::getHeight() * 40.f);
         LevelSystem::setOffset(Vector2f(0, ho));
 
@@ -42,6 +44,36 @@ void Level1Scene::Load() {
         auto e = makeEntity();
         e->setPosition(pos);
         e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        auto wall = e->addComponent<ShapeComponent>();
+        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
+        wall->getShape().setFillColor(Color::White);
+        wall->getShape().setOrigin(Vector2f(20.f, 20.f));
+    }
+
+    auto platformTiles = LevelSystem::findTiles(LevelSystem::PLATFORM);
+    for (auto w : platformTiles) {
+        auto pos = LevelSystem::getTilePosition(w);
+        pos += Vector2f(20.f, 20.f); //offset to center
+        auto e = makeEntity();
+        e->setPosition(pos);
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        auto wall = e->addComponent<ShapeComponent>();
+        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
+        wall->getShape().setFillColor(Color::Cyan);
+        wall->getShape().setOrigin(Vector2f(20.f, 20.f));
+    }
+
+    auto endTiles = LevelSystem::findTiles(LevelSystem::END);
+    for (auto w : endTiles) {
+        auto pos = LevelSystem::getTilePosition(w);
+        pos += Vector2f(20.f, 20.f); //offset to center
+        auto e = makeEntity();
+        e->setPosition(pos);
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        auto wall = e->addComponent<ShapeComponent>();
+        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
+        wall->getShape().setFillColor(Color::Green);        //TODO change to setTexture
+        wall->getShape().setOrigin(Vector2f(20.f, 20.f));
     }
 
     //Simulate long loading times
@@ -61,6 +93,7 @@ void Level1Scene::UnLoad() {
 void Level1Scene::Update(const double& dt) {
     // Check if player is on an END tile and change to the next scene if they are
     if (LevelSystem::getTileAt(player->getPosition()) == LevelSystem::END) {
+        cout<<"level load failed : 1";
 //    Engine::ChangeScene((Scene*)&level2);
     }
     Scene::Update(dt);
