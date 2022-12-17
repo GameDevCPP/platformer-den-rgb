@@ -10,6 +10,8 @@ using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> player;
+static shared_ptr<Entity> player2;
+
 
 void Level1Scene::Load() {
   cout << " Scene 1 Load" << endl;
@@ -21,13 +23,21 @@ void Level1Scene::Load() {
   // Create player
   {
     player = makeEntity();
+    player2 = makeEntity();
     player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+    player2->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
     auto s = player->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
+    auto s2 = player2->addComponent<ShapeComponent>();
+    s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
     s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(Vector2f(10.f, 15.f));
+    s->getShape().setOrigin(Vector2f(10.f, 10.f));
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
+    s2->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
+    s2->getShape().setFillColor(Color::Magenta);
+    s2->getShape().setOrigin(Vector2f(10.f, 10.f));
+
+    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
+    player2->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
   }
 
   // Add physics colliders to level tiles.
