@@ -1,3 +1,4 @@
+//scene_level1.cpp
 #include "scene_level1.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_sprite.h"
@@ -12,59 +13,93 @@ using namespace sf;
 static shared_ptr<Entity> player;
 
 void Level1Scene::Load() {
-  cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/level_1.txt", 40.0f);
+    cout << " Scene 1 Load" << endl;
 
-  auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
-  ls::setOffset(Vector2f(0, ho));
+    LevelSystem::loadLevelFile("res/L5.png", LevelSystem::_colours, 40.0f);
 
-  // Create player
-  {
-    player = makeEntity();
-    player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-    auto s = player->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
-    s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(Vector2f(10.f, 15.f));
+    // Find the position of the first START tile and set the offset accordingly
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
-  }
+    auto startTiles = LevelSystem::findTiles(LevelSystem::START);
+    if (startTiles.size() > 0) {
+        cout<<"start biger then 0";
+        auto ho = Engine::getWindowSize().y - (LevelSystem::getHeight() * 40.f);
+        LevelSystem::setOffset(Vector2f(0, ho));
 
-  // Add physics colliders to level tiles.
-  {
-    auto walls = ls::findTiles(ls::WALL);
-    for (auto w : walls) {
-      auto pos = ls::getTilePosition(w);
-      pos += Vector2f(20.f, 20.f); //offset to center
-      auto e = makeEntity();
-      e->setPosition(pos);
-      e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        // Create player at the position of the first START tile
+        player = makeEntity();
+        player->setPosition(LevelSystem::getTilePosition(startTiles[0]));
+        auto s = player->addComponent<ShapeComponent>();
+        s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
+        s->getShape().setFillColor(Color::Magenta);
+        s->getShape().setOrigin(Vector2f(10.f, 15.f));
+
+        player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
     }
-  }
 
-  //Simulate long loading times
-  std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-  cout << " Scene 1 Load Done" << endl;
+    // Find all WALL tiles and add physics colliders to them
+    auto wallTiles = LevelSystem::findTiles(LevelSystem::WALL);
+    for (auto w : wallTiles) {
+        auto pos = LevelSystem::getTilePosition(w);
+        pos += Vector2f(20.f, 20.f); //offset to center
+        auto e = makeEntity();
+        e->setPosition(pos);
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        auto wall = e->addComponent<ShapeComponent>();
+        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
+        wall->getShape().setFillColor(Color::White);
+        wall->getShape().setOrigin(Vector2f(20.f, 20.f));
+    }
 
-  setLoaded(true);
+    auto platformTiles = LevelSystem::findTiles(LevelSystem::PLATFORM);
+    for (auto w : platformTiles) {
+        auto pos = LevelSystem::getTilePosition(w);
+        pos += Vector2f(20.f, 20.f); //offset to center
+        auto e = makeEntity();
+        e->setPosition(pos);
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        auto wall = e->addComponent<ShapeComponent>();
+        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
+        wall->getShape().setFillColor(Color::Cyan);
+        wall->getShape().setOrigin(Vector2f(20.f, 20.f));
+    }
+
+    auto endTiles = LevelSystem::findTiles(LevelSystem::END);
+    for (auto w : endTiles) {
+        auto pos = LevelSystem::getTilePosition(w);
+        pos += Vector2f(20.f, 20.f); //offset to center
+        auto e = makeEntity();
+        e->setPosition(pos);
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        auto wall = e->addComponent<ShapeComponent>();
+        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
+        wall->getShape().setFillColor(Color::Green);        //TODO change to setTexture
+        wall->getShape().setOrigin(Vector2f(20.f, 20.f));
+    }
+
+    //Simulate long loading times
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    cout << " Scene 1 Load Done" << endl;
+
+    setLoaded(true);
 }
 
 void Level1Scene::UnLoad() {
-  cout << "Scene 1 Unload" << endl;
-  player.reset();
-  ls::unload();
-  Scene::UnLoad();
+    cout << "Scene 1 Unload" << endl;
+    player.reset();
+    LevelSystem::unload();
+    Scene::UnLoad();
 }
 
 void Level1Scene::Update(const double& dt) {
-
-  if (ls::getTileAt(player->getPosition()) == ls::END) {
-    Engine::ChangeScene((Scene*)&level2);
-  }
-  Scene::Update(dt);
+    // Check if player is on an END tile and change to the next scene if they are
+    if (LevelSystem::getTileAt(player->getPosition()) == LevelSystem::END) {
+        cout<<"level load failed : 1";
+//    Engine::ChangeScene((Scene*)&level2);
+    }
+    Scene::Update(dt);
 }
 
 void Level1Scene::Render() {
-  ls::render(Engine::GetWindow());
-  Scene::Render();
+    LevelSystem::render(Engine::GetWindow());
+    Scene::Render();
 }
