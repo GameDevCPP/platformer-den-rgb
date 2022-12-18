@@ -7,6 +7,9 @@
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
+#include <typeindex>
+#include <typeinfo>
+#include <sstream>
 using namespace std;
 using namespace sf;
 
@@ -23,27 +26,8 @@ void Level2Scene::Load() {
 
   // Create player
   {
-      player = makeEntity();
-      player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-      auto s = player->addComponent<ShapeComponent>();
-      s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-      s->getShape().setFillColor(Color::Magenta);
-      s->getShape().setOrigin(Vector2f(10.f, 10.f));
-
-      player2 = makeEntity();
-      player2->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
-      auto s2 = player2->addComponent<ShapeComponent>();
-      s2->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-      s2->getShape().setFillColor(Color::Magenta);
-      s2->getShape().setOrigin(Vector2f(10.f, 10.f));
-
-
-    // *********************************
-    player->addTag("player");
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
-
-    player2->addTag("player2");
-    player2->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
+      makePlayer(player);
+      makePlayer(player2);
   }
 
   // Create Enemy
@@ -113,9 +97,9 @@ void Level2Scene::Load() {
           pos += Vector2f(20.f, 5.f); //offset to center
           auto e = makeEntity();
           e->setPosition(pos);
-          e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 10.f));
+          e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 20.f));
           auto wall = e->addComponent<ShapeComponent>();
-          wall->setShape<sf::RectangleShape>(Vector2f(40.f, 10.f));
+          wall->setShape<sf::RectangleShape>(Vector2f(40.f, 20.f));
           wall->getShape().setFillColor(Color::Cyan);
           wall->getShape().setOrigin(Vector2f(20.f, 5.f));
       }
@@ -167,28 +151,33 @@ void Level2Scene::Update(const double& dt) {
   }
 
   if (!player->isAlive()) {
-      player = makeEntity();
-      player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-      auto s = player->addComponent<ShapeComponent>();
-      s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-      s->getShape().setFillColor(Color::Magenta);
-      s->getShape().setOrigin(Vector2f(10.f, 10.f));
-      player->addTag("player");
-      player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
+      makePlayer(player);
   }
   if (!player2->isAlive()){
-      player2 = makeEntity();
-      player2->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
-      auto s2 = player2->addComponent<ShapeComponent>();
-      s2->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-      s2->getShape().setFillColor(Color::Magenta);
-      s2->getShape().setOrigin(Vector2f(10.f, 10.f));
-      player2->addTag("player2");
-      player2->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
+      makePlayer(player2);
   }
 
   Scene::Update(dt);
 }
+
+void Level2Scene::makePlayer(shared_ptr<Entity> &p){
+    if (p == player) {
+        p= makeEntity();
+        p->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+        p->addTag("player");
+    } else if (p == player2){
+        p= makeEntity();
+        p->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
+        p->addTag("player2");
+    }
+    auto s = p->addComponent<ShapeComponent>();
+    s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
+    s->getShape().setFillColor(Color::Magenta);
+    s->getShape().setOrigin(Vector2f(10.f, 10.f));
+    p->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
+}
+
+
 
 void Level2Scene::Render() {
   ls::render(Engine::GetWindow());
