@@ -51,7 +51,9 @@ void LevelSystem::loadLevelFile(const std::string& path, map<TILES, Color> colou
                 _tiles[y * _width + x] = PLATFORM;
             } else if (pixelColor == _colours[START]) {
                 _tiles[y * _width + x] = START;
-            } else {
+            } else if (pixelColor == _colours[ENEMY]) {
+                _tiles[y * _width + x] = ENEMY;
+            }else {
                 _tiles[y * _width + x] = EMPTY;
             }
         }
@@ -111,6 +113,15 @@ vector<sf::Vector2ul> LevelSystem::findTiles(TILES t) {
     vector<sf::Vector2ul> found;
     for (size_t y = 0; y < _height; ++y) {
         for (size_t x = 0; x < _width; ++x) {
+//            auto colorT = LevelSystem::_colours[t];
+//            auto r = colorT.r;
+//            auto b = colorT.b;
+//            auto g = colorT.g;
+//            auto color2 = LevelSystem::_colours[getTile({x, y})];
+//            auto r2 = color2.r;
+//            auto b2 = color2.b;
+//            auto g2 = color2.g;
+//            auto i = getTile({x, y});
             if (getTile({x, y}) == t) {
                 found.push_back({x, y});
             }

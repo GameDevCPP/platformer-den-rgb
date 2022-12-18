@@ -10,12 +10,12 @@ void EnemyTurretComponent::update(double dt) {
   _firetime -= dt;
   if (_firetime <= 0.f) {
     fire();
-    _firetime = 1.f;
+    _firetime = 3.f;
   }
   static float angle = 0.f;
   angle += 1.f * dt;
 
-  _parent->setRotation(180.f + sin(angle) * 45.f);
+  _parent->setRotation(360.f + sin(angle) * 360.f);
 }
 
 void EnemyTurretComponent::fire() const {
