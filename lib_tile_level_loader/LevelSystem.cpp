@@ -18,6 +18,7 @@ std::map<LevelSystem::TILES, sf::Color> LevelSystem::_colours = {
         {LevelSystem::WALL, sf::Color::White},
         {LevelSystem::END, sf::Color::Green},
         {LevelSystem::PLATFORM, sf::Color::Blue},
+        {LevelSystem::ENEMY, sf::Color::Yellow},
         // Add other mappings as needed
 };
 
