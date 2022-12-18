@@ -16,7 +16,7 @@ static shared_ptr<Entity> player2;
 void Level1Scene::Load() {
     cout << " Scene 1 Load" << endl;
 
-    LevelSystem::loadLevelFile("res/TestLevel1.png", LevelSystem::_colours, 40.0f);
+    LevelSystem::loadLevelFile("res/L1.png", LevelSystem::_colours, 40.0f);
 
     // Find the position of the first START tile and set the offset accordingly
 
@@ -99,10 +99,15 @@ void Level1Scene::UnLoad() {
 }
 
 void Level1Scene::Update(const double& dt) {
+
     // Check if player is on an END tile and change to the next scene if they are
-    if (LevelSystem::getTileAt(player->getPosition()) == LevelSystem::END) {
-        cout<<"level load failed : 1";
+    if (LevelSystem::getTileAt(player->getPosition()) == LevelSystem::END ) {
+
 //    Engine::ChangeScene((Scene*)&level2);
+    }
+
+    if (LevelSystem::getTileAt(player2->getPosition()) == LevelSystem::END ) {
+
     }
     Scene::Update(dt);
 }
