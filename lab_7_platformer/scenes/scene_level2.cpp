@@ -167,10 +167,24 @@ void Level2Scene::Update(const double& dt) {
   }
 
   if (!player->isAlive()) {
+      player = makeEntity();
       player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+      auto s = player->addComponent<ShapeComponent>();
+      s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
+      s->getShape().setFillColor(Color::Magenta);
+      s->getShape().setOrigin(Vector2f(10.f, 10.f));
+      player->addTag("player");
+      player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
   }
   if (!player2->isAlive()){
+      player2 = makeEntity();
       player2->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
+      auto s2 = player2->addComponent<ShapeComponent>();
+      s2->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
+      s2->getShape().setFillColor(Color::Magenta);
+      s2->getShape().setOrigin(Vector2f(10.f, 10.f));
+      player2->addTag("player2");
+      player2->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
   }
 
   Scene::Update(dt);

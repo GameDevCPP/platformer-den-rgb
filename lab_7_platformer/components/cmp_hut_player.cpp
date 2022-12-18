@@ -1,6 +1,6 @@
 #include "cmp_hurt_player.h"
 #include <engine.h>
-
+#include <LevelSystem.h>
 using namespace std;
 using namespace sf;
 
@@ -9,7 +9,7 @@ void HurtComponent::update(double dt) {
     if (auto pl = _player1.lock()) {
         if (length(pl->getPosition() - _parent->getPosition()) < 25.0) {
             pl->setForDelete();
-            _parent->setForDelete();
+//            _parent->setForDelete();
         }
     }
 
@@ -17,7 +17,7 @@ void HurtComponent::update(double dt) {
     if (auto pl = _player2.lock()) {
         if (length(pl->getPosition() - _parent->getPosition()) < 25.0) {
             pl->setForDelete();
-            _parent->setForDelete();
+//            _parent->setForDelete();
         }
     }
 }
