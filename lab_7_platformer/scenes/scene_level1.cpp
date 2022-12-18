@@ -11,11 +11,12 @@ using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> player;
+static shared_ptr<Entity> player2;
 
 void Level1Scene::Load() {
     cout << " Scene 1 Load" << endl;
 
-    LevelSystem::loadLevelFile("res/L5.png", LevelSystem::_colours, 40.0f);
+    LevelSystem::loadLevelFile("res/TestLevel1.png", LevelSystem::_colours, 40.0f);
 
     // Find the position of the first START tile and set the offset accordingly
 
@@ -32,8 +33,15 @@ void Level1Scene::Load() {
         s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
         s->getShape().setFillColor(Color::Magenta);
         s->getShape().setOrigin(Vector2f(10.f, 15.f));
-
         player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
+
+        player2 = makeEntity();
+        player2->setPosition(LevelSystem::getTilePosition(startTiles[1]));
+        auto s2 = player2->addComponent<ShapeComponent>();
+        s2->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
+        s2->getShape().setFillColor(Color::Magenta);
+        s2->getShape().setOrigin(Vector2f(10.f, 15.f));
+        player2->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
     }
 
     // Find all WALL tiles and add physics colliders to them
@@ -53,14 +61,14 @@ void Level1Scene::Load() {
     auto platformTiles = LevelSystem::findTiles(LevelSystem::PLATFORM);
     for (auto w : platformTiles) {
         auto pos = LevelSystem::getTilePosition(w);
-        pos += Vector2f(20.f, 20.f); //offset to center
+        pos += Vector2f(20.f, 5.f); //offset to center
         auto e = makeEntity();
         e->setPosition(pos);
-        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 10.f));
         auto wall = e->addComponent<ShapeComponent>();
-        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
+        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 10.f));
         wall->getShape().setFillColor(Color::Cyan);
-        wall->getShape().setOrigin(Vector2f(20.f, 20.f));
+        wall->getShape().setOrigin(Vector2f(20.f, 5.f));
     }
 
     auto endTiles = LevelSystem::findTiles(LevelSystem::END);
