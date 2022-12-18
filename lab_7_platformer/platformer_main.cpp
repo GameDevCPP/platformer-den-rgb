@@ -10,5 +10,5 @@ Level1Scene level1;
 //Level3Scene level3;
 
 int main() {
-  Engine::Start(1280, 720, "Platformer",&menu);
+  Engine::Start(1280, 720, "Twin Split",&menu);
 }
