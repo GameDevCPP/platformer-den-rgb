@@ -15,3 +15,5 @@ void HurtComponent::update(double dt) {
 
 HurtComponent::HurtComponent(Entity* p)
     : Component(p), _player(_parent->scene->ents.find("player")[0]) {}
+
+
