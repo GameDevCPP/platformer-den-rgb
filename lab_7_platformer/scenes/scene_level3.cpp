@@ -6,9 +6,10 @@
 #include "../components/cmp_physics.h"
 #include "../components/cmp_player_physics.h"
 #include "../game.h"
+#include "../components/SoundEffects.h"
 #include <LevelSystem.h>
 #include <iostream>
-#include <SFML/Audio.hpp>
+
 using namespace std;
 using namespace sf;
 
@@ -22,6 +23,8 @@ void Level3Scene::Load() {
     LevelSystem::loadLevelFile("res/test31.png", LevelSystem::_colours, 40.0f);
     auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
     ls::setOffset(Vector2f(0, ho));
+
+
     // Create player
     {
         makePlayer(player);
@@ -180,9 +183,11 @@ void Level3Scene::Update(const double& dt) {
     }
 
     if (!player->isAlive()) {
+        SoundEffects::play("res/audio/die.wav");
         makePlayer(player);
     }
     if (!player2->isAlive()){
+        SoundEffects::play("res/audio/die.wav");
         makePlayer(player2);
     }
 

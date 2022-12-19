@@ -2,6 +2,7 @@
 #include "system_physics.h"
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
+#include "../components/SoundEffects.h"
 
 using namespace std;
 using namespace sf;
@@ -60,6 +61,8 @@ void PlayerPhysicsComponent::update(double dt) {
       setVelocity(Vector2f(getVelocity().x, 0.f));
       teleport(Vector2f(pos.x, pos.y - 27.0f));
       impulse(Vector2f(0, -6.f));
+
+      SoundEffects::play("res/audio/jump.wav");
     }
   }
 
