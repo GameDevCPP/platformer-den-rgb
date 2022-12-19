@@ -5,6 +5,7 @@
 #include "../components/cmp_physics.h"
 #include "../components/cmp_player_physics.h"
 #include "../game.h"
+#include "../components/SoundEffects.h"
 #include <LevelSystem.h>
 #include <iostream>
 #include <typeindex>
@@ -151,9 +152,11 @@ void Level2Scene::Update(const double& dt) {
   }
 
   if (!player->isAlive()) {
+      SoundEffects::play("res/audio/die.wav");
       makePlayer(player);
   }
   if (!player2->isAlive()){
+      SoundEffects::play("res/audio/die.wav");
       makePlayer(player2);
   }
 
