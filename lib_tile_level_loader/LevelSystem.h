@@ -20,7 +20,7 @@ public:
         WALL ,
         PLATFORM ,
         ENEMY ,
-        WAYPOINT
+        LASER
     };
 //    typedef unsigned char Tile;
     static void loadLevelFile(const std::string&, std::map<TILES, sf::Color>, float tileSize = 100.0f);

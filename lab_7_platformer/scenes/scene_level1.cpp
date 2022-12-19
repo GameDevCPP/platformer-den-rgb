@@ -17,7 +17,7 @@ int endCounter2 = 0;
 void Level1Scene::Load() {
     cout << " Scene 1 Load" << endl;
 
-    LevelSystem::loadLevelFile("res/L1.png", LevelSystem::_colours, 40.0f);
+    LevelSystem::loadLevelFile("res/Level1.png", LevelSystem::_colours, 40.0f);
 
     // Find the position of the first START tile and set the offset accordingly
 
@@ -65,11 +65,11 @@ void Level1Scene::Load() {
         pos += Vector2f(20.f, 5.f); //offset to center
         auto e = makeEntity();
         e->setPosition(pos);
-        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 10.f));
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 20.f));
         auto wall = e->addComponent<ShapeComponent>();
-        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 10.f));
+        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 20.f));
         wall->getShape().setFillColor(Color::Cyan);
-        wall->getShape().setOrigin(Vector2f(20.f, 5.f));
+        wall->getShape().setOrigin(Vector2f(20.f, 10.f));
     }
 
     auto endTiles = LevelSystem::findTiles(LevelSystem::END);
@@ -116,7 +116,7 @@ void Level1Scene::Update(const double& dt) {
     }
 
     if (endCounter1 + endCounter2 >=2) {
-        Engine::ChangeScene((Scene*)&level1);
+        Engine::ChangeScene((Scene*)&level2);
     }
     Scene::Update(dt);
 }

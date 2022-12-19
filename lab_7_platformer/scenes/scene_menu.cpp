@@ -99,7 +99,7 @@ void MenuScene::Update(const double& dt) {
 
         // Check if the play button is clicked
         if (Mouse::isButtonPressed(Mouse::Left)) {
-            Engine::ChangeScene(&level1);
+            Engine::ChangeScene(&level3);
         }
     }
     else {
@@ -149,6 +149,7 @@ void MenuScene::Render() {
     Engine::GetWindow().draw(exitButton);
     Engine::GetWindow().draw(exitText);
     Scene::Render();
+
 }
 
 void MenuScene::UnLoad() {
