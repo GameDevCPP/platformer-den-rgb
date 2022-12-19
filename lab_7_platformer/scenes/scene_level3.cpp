@@ -8,6 +8,7 @@
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
+#include <SFML/Audio.hpp>
 using namespace std;
 using namespace sf;
 
@@ -18,10 +19,9 @@ int l3endCounter2 = 0;
 void Level3Scene::Load() {
     cout << "Scene 2 Load" << endl;
 
-    LevelSystem::loadLevelFile("res/test3.png", LevelSystem::_colours, 40.0f);
+    LevelSystem::loadLevelFile("res/test31.png", LevelSystem::_colours, 40.0f);
     auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
     ls::setOffset(Vector2f(0, ho));
-
     // Create player
     {
         makePlayer(player);

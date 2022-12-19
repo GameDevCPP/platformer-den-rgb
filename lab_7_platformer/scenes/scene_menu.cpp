@@ -149,6 +149,7 @@ void MenuScene::Render() {
     Engine::GetWindow().draw(exitButton);
     Engine::GetWindow().draw(exitText);
     Scene::Render();
+
 }
 
 void MenuScene::UnLoad() {

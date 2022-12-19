@@ -46,7 +46,7 @@ void EnemyLaserComponent::fire() const {
         auto target = path.back();
 
         // Calculate the angle between the turret and the target point
-        auto angle = atan2(target.y - _parent->getPosition().y, target.x - _parent->getPosition().x);
+        auto angle = std::atan2(target.y - _parent->getPosition().y, target.x - _parent->getPosition().x);
         angle = angle * 180 / M_PI;
 
         // Set the rotation of the bullet to the angle
@@ -63,7 +63,7 @@ void EnemyLaserComponent::fire() const {
         auto target = path2.back();
 
         // Calculate the angle between the turret and the target point
-        auto angle = atan2(target.y - _parent->getPosition().y, target.x - _parent->getPosition().x);
+        auto angle = std::atan2(target.y - _parent->getPosition().y, target.x - _parent->getPosition().x);
         angle = angle * 180 / M_PI;
 
         // Set the rotation of the bullet to the angle

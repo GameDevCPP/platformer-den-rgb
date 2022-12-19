@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine.h"
+#include "SFML/Audio/Music.hpp"
 
 class Level3Scene : public Scene {
 public:
@@ -12,5 +13,5 @@ public:
 
   void Render() override;
 
-    void makePlayer(std::shared_ptr<Entity> &p);
+  void makePlayer(std::shared_ptr<Entity> &p);
 };

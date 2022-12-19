@@ -17,14 +17,12 @@ class EnemyLaserComponent : public Component {
 protected:
     void fire() const;
     float _firetime;
-
 public:
     void update(double dt) override;
     explicit EnemyLaserComponent(Entity* p);
     void render() override {}
     EnemyLaserComponent() = delete;
 };
-
 // Define new function that uses A* pathfinding algorithm to locate player and output laser towards player
 std::vector<sf::Vector2f> findPathToPlayer(sf::Vector2f start, sf::Vector2f end, int mapWidth, int mapHeight);
 
