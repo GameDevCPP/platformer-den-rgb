@@ -19,7 +19,7 @@ std::map<LevelSystem::TILES, sf::Color> LevelSystem::_colours = {
         {LevelSystem::END, sf::Color::Green},
         {LevelSystem::PLATFORM, sf::Color::Blue},
         {LevelSystem::ENEMY, sf::Color::Yellow},
-        // Add other mappings as needed
+        {LevelSystem::LASER, sf::Color::Cyan},
 };
 
 void LevelSystem::loadLevelFile(const std::string& path, map<TILES, Color> colours, float tileSize) {
@@ -53,6 +53,8 @@ void LevelSystem::loadLevelFile(const std::string& path, map<TILES, Color> colou
                 _tiles[y * _width + x] = START;
             } else if (pixelColor == _colours[ENEMY]) {
                 _tiles[y * _width + x] = ENEMY;
+            }else if (pixelColor == _colours[LASER]) {
+                _tiles[y * _width + x] = LASER;
             }else {
                 _tiles[y * _width + x] = EMPTY;
             }

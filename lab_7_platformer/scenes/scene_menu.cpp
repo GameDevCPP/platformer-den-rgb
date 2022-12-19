@@ -99,7 +99,7 @@ void MenuScene::Update(const double& dt) {
 
         // Check if the play button is clicked
         if (Mouse::isButtonPressed(Mouse::Left)) {
-            Engine::ChangeScene(&level2);
+            Engine::ChangeScene(&level3);
         }
     }
     else {
