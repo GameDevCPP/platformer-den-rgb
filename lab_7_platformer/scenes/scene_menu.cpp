@@ -1,6 +1,7 @@
 #include "scene_menu.h"
 #include "../components/cmp_text.h"
 #include "../game.h"
+#include "../components/BackGroundMusic.h"
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <SFML/Graphics.hpp>
@@ -88,7 +89,7 @@ void MenuScene::Load() {
     exitText.setOutlineThickness(4);
 
     setLoaded(true);
-
+    BackGroundMusic::playAudio("res/audio/bm.wav");
 }
 
 void MenuScene::Update(const double& dt) {

@@ -74,6 +74,84 @@ void EnemyLaserComponent::fire() const {
     }
 }
 
+#include <vector>
+#include <utility>
+#include <set>
+#include <cmath>
+#include <map>
+
+const int dx[4] = {1, 0, -1, 0};
+const int dy[4] = {0, 1, 0, -1};
+
+// Function to calculate the heuristic cost of moving from one position to another
+double heuristic(sf::Vector2f pos1, sf::Vector2f pos2)
+{
+    return std::sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y));
+}
+
+//std::vector<sf::Vector2f> findPathToPlayer(sf::Vector2f start, sf::Vector2f end, int mapWidth, int mapHeight)
+//{
+//    // Set up data structures for the A* search
+//    std::set<std::pair<double, sf::Vector2f>> openSet;
+//    std::set<sf::Vector2f> closedSet;
+//    std::map<sf::Vector2f, sf::Vector2f> cameFrom;
+//    std::map<sf::Vector2f, double> gScore;
+//    std::map<sf::Vector2f, double> fScore;
+//
+//    // Add the start position to the open set and initialize its g and f scores
+//    openSet.insert(std::make_pair(0, start));
+//    gScore[start] = 0;
+//    fScore[start] = heuristic(start, end);
+//
+//    // Loop until the open set is empty or the end position is found
+//    while (!openSet.empty())
+//    {
+//        // Find the position in the open set with the lowest f score
+//        sf::Vector2f current = openSet.begin()->second;
+//        if (current == end)
+//        {
+//            // If the end position is found, construct and return the path
+//            std::vector<sf::Vector2f> path;
+//            while (current != start)
+//            {
+//                path.push_back(current);
+//                current = cameFrom[current];
+//            }
+//            path.push_back(start);
+//            std::reverse(path.begin(), path.end());
+//            return path;
+//        }
+//
+//        // Remove the current position from the open set and add it to the closed set
+//        openSet.erase(openSet.begin());
+//        closedSet.insert(current);
+//
+//        // Consider each neighbor of the current position
+//        for (int i = 0; i < 4; i++)
+//        {
+//            sf::Vector2f neighbor(current.x + dx[i], current.y + dy[i]);
+//
+//            // Skip this neighbor if it is outside the map or has already been considered
+//            if (neighbor.x < 0 || neighbor.x >= mapWidth || neighbor.y < 0 || neighbor.y >= mapHeight || closedSet.count(neighbor))
+//                continue;
+//
+//            // Calculate the tentative g score for the neighbor
+//            double tentativeGScore = gScore[current] + 1; // Assume a cost of 1 to
+//
+//            if (!openSet.count(neighbor) || tentativeGScore < gScore[neighbor])
+//            {
+//                cameFrom[neighbor] = current;
+//                gScore[neighbor] = tentativeGScore;
+//                fScore[neighbor] = gScore[neighbor] + heuristic(neighbor, end);
+//                openSet.insert(std::make_pair(fScore[neighbor], neighbor));
+//            }
+//        }
+//    }
+//
+//// If the open set is empty, no path to the end position was found
+//    return std::vector<sf::Vector2f>();
+//
+//}
 EnemyLaserComponent::EnemyLaserComponent(Entity* p)
         : Component(p), _firetime(2.f) {}
 
