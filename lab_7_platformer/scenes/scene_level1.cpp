@@ -18,59 +18,54 @@ void Level1Scene::Load() {
     cout << " Scene 1 Load" << endl;
 
     LevelSystem::loadLevelFile("res/Level1.png", LevelSystem::_colours, 40.0f);
-
-    // Find the position of the first START tile and set the offset accordingly
-
-    auto startTiles = LevelSystem::findTiles(LevelSystem::START);
-    if (startTiles.size() > 0) {
-        cout<<"start biger then 0";
-        auto ho = Engine::getWindowSize().y - (LevelSystem::getHeight() * 40.f);
-        LevelSystem::setOffset(Vector2f(0, ho));
-
-        // Create player at the position of the first START tile
-        player = makeEntity();
-        player->setPosition(LevelSystem::getTilePosition(startTiles[0]));
-        auto s = player->addComponent<ShapeComponent>();
-        s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-        s->getShape().setFillColor(Color::Magenta);
-        s->getShape().setOrigin(Vector2f(10.f, 10.f));
-        player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
-
-        player2 = makeEntity();
-        player2->setPosition(LevelSystem::getTilePosition(startTiles[1]));
-        auto s2 = player2->addComponent<ShapeComponent>();
-        s2->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-        s2->getShape().setFillColor(Color::Magenta);
-        s2->getShape().setOrigin(Vector2f(10.f, 10.f));
-        player2->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
+    {
+        makePlayer(player);
+        makePlayer(player2);
     }
+
 
     // Find all WALL tiles and add physics colliders to them
-    auto wallTiles = LevelSystem::findTiles(LevelSystem::WALL);
-    for (auto w : wallTiles) {
-        auto pos = LevelSystem::getTilePosition(w);
-        pos += Vector2f(20.f, 20.f); //offset to center
-        auto e = makeEntity();
-        e->setPosition(pos);
-        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
-        auto wall = e->addComponent<ShapeComponent>();
-        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
-        wall->getShape().setFillColor(Color::White);
-        wall->getShape().setOrigin(Vector2f(20.f, 20.f));
-    }
 
-    auto platformTiles = LevelSystem::findTiles(LevelSystem::PLATFORM);
-    for (auto w : platformTiles) {
-        auto pos = LevelSystem::getTilePosition(w);
-        pos += Vector2f(20.f, 5.f); //offset to center
-        auto e = makeEntity();
-        e->setPosition(pos);
-        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 20.f));
-        auto wall = e->addComponent<ShapeComponent>();
-        wall->setShape<sf::RectangleShape>(Vector2f(40.f, 20.f));
-        wall->getShape().setFillColor(Color::Cyan);
-        wall->getShape().setOrigin(Vector2f(20.f, 10.f));
-    }
+        // *********************************
+        auto wallTiles = LevelSystem::findTiles(LevelSystem::WALL);
+        for (auto w : wallTiles) {
+            auto pos = LevelSystem::getTilePosition(w);
+            pos += Vector2f(20.f, 20.f); //offset to center
+            auto e = makeEntity();
+            e->setPosition(pos);
+            e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+            auto sprite = e->addComponent<SpriteComponent>();
+            auto texture = make_shared<sf::Texture>();
+            if (!texture->loadFromFile("res/sprites/wall.png")) {
+                // Error loading the texture
+                std::cout << "Error loading player texture" << std::endl;
+                exit(1);
+            }
+
+// Set the texture on the sprite
+            sprite->setTexture(texture);
+            sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
+        }
+
+        auto platformTiles = LevelSystem::findTiles(LevelSystem::PLATFORM);
+        for (auto w : platformTiles) {
+            auto pos = LevelSystem::getTilePosition(w);
+            pos += Vector2f(20.f, 5.f); //offset to center
+            auto e = makeEntity();
+            e->setPosition(pos);
+            e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 20.f));
+            auto sprite = e->addComponent<SpriteComponent>();
+            auto texture = make_shared<sf::Texture>();
+            if (!texture->loadFromFile("res/sprites/platform.png")) {
+                // Error loading the texture
+                std::cout << "Error loading player texture" << std::endl;
+                exit(1);
+            }
+
+// Set the texture on the sprite
+            sprite->setTexture(texture);
+            sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
+        }
 
     auto endTiles = LevelSystem::findTiles(LevelSystem::END);
     for (auto w : endTiles) {
@@ -79,10 +74,17 @@ void Level1Scene::Load() {
         auto e = makeEntity();
         e->setPosition(pos);
         e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 10.f));
-        auto end = e->addComponent<ShapeComponent>();
-        end->setShape<sf::RectangleShape>(Vector2f(40.f, 10.f));
-        end->getShape().setFillColor(Color::Green);
-        end->getShape().setOrigin(Vector2f(20.f, 5.f));
+        auto sprite = e->addComponent<SpriteComponent>();
+        auto texture = make_shared<sf::Texture>();
+        if (!texture->loadFromFile("res/sprites/end.png")) {
+            // Error loading the texture
+            std::cout << "Error loading player texture" << std::endl;
+            exit(1);
+        }
+
+// Set the texture on the sprite
+        sprite->setTexture(texture);
+        sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
     }
 
     //Simulate long loading times
@@ -119,6 +121,23 @@ void Level1Scene::Update(const double& dt) {
         Engine::ChangeScene((Scene*)&level2);
     }
     Scene::Update(dt);
+}
+
+void Level1Scene::makePlayer(shared_ptr<Entity> &p){
+    if (p == player) {
+        p= makeEntity();
+        p->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+        p->addTag("player");
+    } else if (p == player2){
+        p= makeEntity();
+        p->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
+        p->addTag("player2");
+    }
+    auto s = p->addComponent<ShapeComponent>();
+    s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
+    s->getShape().setFillColor(Color::Magenta);
+    s->getShape().setOrigin(Vector2f(10.f, 10.f));
+    p->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
 }
 
 void Level1Scene::Render() {

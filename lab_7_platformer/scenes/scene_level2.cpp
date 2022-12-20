@@ -77,48 +77,100 @@ void Level2Scene::Load() {
     }
 
   // Add physics colliders to level tiles.
-  {
-    // *********************************
-      auto wallTiles = LevelSystem::findTiles(LevelSystem::WALL);
-      for (auto w : wallTiles) {
-          auto pos = LevelSystem::getTilePosition(w);
-          pos += Vector2f(20.f, 20.f); //offset to center
-          auto e = makeEntity();
-          e->setPosition(pos);
-          e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
-          auto wall = e->addComponent<ShapeComponent>();
-          wall->setShape<sf::RectangleShape>(Vector2f(40.f, 40.f));
-          wall->getShape().setFillColor(Color::White);
-          wall->getShape().setOrigin(Vector2f(20.f, 20.f));
-      }
+    {
+        int numEnemyTiles = ls::findTiles(ls::ENEMY).size();
+        for (int i = 0; i <numEnemyTiles; i++) {
+            auto turret = makeEntity();
 
-      auto platformTiles = LevelSystem::findTiles(LevelSystem::PLATFORM);
-      for (auto w : platformTiles) {
-          auto pos = LevelSystem::getTilePosition(w);
-          pos += Vector2f(20.f, 5.f); //offset to center
-          auto e = makeEntity();
-          e->setPosition(pos);
-          e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 20.f));
-          auto wall = e->addComponent<ShapeComponent>();
-          wall->setShape<sf::RectangleShape>(Vector2f(40.f, 20.f));
-          wall->getShape().setFillColor(Color::Cyan);
-          wall->getShape().setOrigin(Vector2f(20.f, 5.f));
-      }
+            // Set the position of the enemy to the position of the ENEMY[i] tile
+            // plus an offset of (20, 0)
+            turret->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[i]) +
+                                Vector2f(0, 25));
 
-      auto endTiles = LevelSystem::findTiles(LevelSystem::END);
-      for (auto w : endTiles) {
-          auto pos = LevelSystem::getTilePosition(w);
-          pos += Vector2f(20.f, 20.f); //offset to center
-          auto e = makeEntity();
-          e->setPosition(pos);
-          e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 10.f));
-          auto end = e->addComponent<ShapeComponent>();
-          end->setShape<sf::RectangleShape>(Vector2f(40.f, 10.f));
-          end->getShape().setFillColor(Color::Green);
-          end->getShape().setOrigin(Vector2f(20.f, 5.f));
-      }
-    // *********************************
-  }
+            auto sprite = turret->addComponent<SpriteComponent>();
+            auto texture = make_shared<sf::Texture>();
+            if (!texture->loadFromFile("res/sprites/turret.png")) {
+                // Error loading the texture
+                std::cout << "Error loading player texture" << std::endl;
+                exit(1);
+            }
+
+// Set the texture on the sprite
+            sprite->setTexture(texture);
+            sprite->getSprite().setOrigin(Vector2f(20.f,20.f));
+//            turret->addComponent<EnemyAIComponent>();
+            turret->addComponent<EnemyTurretComponent>();
+            turret->addComponent<HurtComponent>();
+        }
+
+
+    }
+
+    // Add physics colliders to level tiles.
+    {
+        // *********************************
+        auto wallTiles = LevelSystem::findTiles(LevelSystem::WALL);
+        for (auto w : wallTiles) {
+            auto pos = LevelSystem::getTilePosition(w);
+            pos += Vector2f(20.f, 20.f); //offset to center
+            auto e = makeEntity();
+            e->setPosition(pos);
+            e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+            auto sprite = e->addComponent<SpriteComponent>();
+            auto texture = make_shared<sf::Texture>();
+            if (!texture->loadFromFile("res/sprites/wall.png")) {
+                // Error loading the texture
+                std::cout << "Error loading player texture" << std::endl;
+                exit(1);
+            }
+
+// Set the texture on the sprite
+            sprite->setTexture(texture);
+            sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
+        }
+
+        auto platformTiles = LevelSystem::findTiles(LevelSystem::PLATFORM);
+        for (auto w : platformTiles) {
+            auto pos = LevelSystem::getTilePosition(w);
+            pos += Vector2f(20.f, 5.f); //offset to center
+            auto e = makeEntity();
+            e->setPosition(pos);
+            e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 20.f));
+            auto sprite = e->addComponent<SpriteComponent>();
+            auto texture = make_shared<sf::Texture>();
+            if (!texture->loadFromFile("res/sprites/platform.png")) {
+                // Error loading the texture
+                std::cout << "Error loading player texture" << std::endl;
+                exit(1);
+            }
+
+// Set the texture on the sprite
+            sprite->setTexture(texture);
+            sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
+        }
+
+        auto endTiles = LevelSystem::findTiles(LevelSystem::END);
+        for (auto w : endTiles) {
+            auto pos = LevelSystem::getTilePosition(w);
+            pos += Vector2f(20.f, 20.f); //offset to center
+            auto e = makeEntity();
+            e->setPosition(pos);
+            e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 10.f));
+            auto sprite = e->addComponent<SpriteComponent>();
+            auto texture = make_shared<sf::Texture>();
+            if (!texture->loadFromFile("res/sprites/end.png")) {
+                // Error loading the texture
+                std::cout << "Error loading player texture" << std::endl;
+                exit(1);
+            }
+
+// Set the texture on the sprite
+            sprite->setTexture(texture);
+            sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
+        }
+        // *********************************
+    }
+
 
   cout << " Scene 2 Load Done" << endl;
   setLoaded(true);
@@ -148,7 +200,7 @@ void Level2Scene::Update(const double& dt) {
   }
 
   if (l2endCounter1 + l2endCounter2 >=2) {
-      Engine::ChangeScene((Scene*)&level1);
+      Engine::ChangeScene((Scene*)&level3);
   }
 
   if (!player->isAlive()) {
