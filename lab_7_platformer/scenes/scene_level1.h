@@ -12,5 +12,5 @@ public:
 
   void Render() override;
 
-    void makePlayer(std::shared_ptr<Entity> &p);
+  void makePlayer(std::shared_ptr<Entity> &p);
 };

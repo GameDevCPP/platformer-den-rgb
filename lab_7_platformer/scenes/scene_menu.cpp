@@ -5,6 +5,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 using namespace std;
 using namespace sf;
@@ -17,15 +18,36 @@ Text titleText;
 RectangleShape playButton;
 Text playText;
 
-RectangleShape settingsButton;
-Text settingsText;
-
 RectangleShape exitButton;
 Text exitText;
 
 // Variables for button hover animation
 Color originalColor;
 
+// SFML Music object for background music
+sf::Music bgm;
+
+// Volume slider and handle
+sf::RectangleShape volumeSlider;
+sf::RectangleShape volumeHandle;
+Text volText;
+
+// Mute button
+sf::RectangleShape muteButton;
+Text muteText;
+
+// Variables for audio control
+float volume = 100.0f;
+bool isMuted = false;
+
+void setMute(bool mute) {
+    isMuted = mute;
+    if (isMuted) {
+        bgm.setVolume(0.0f);
+    } else {
+        bgm.setVolume(volume);
+    }
+}
 
 void MenuScene::Load() {
     cout << "Menu Load \n";
@@ -58,20 +80,25 @@ void MenuScene::Load() {
     playText.setOutlineColor(sf::Color::Magenta);
     playText.setOutlineThickness(4);
 
-// Set up settings button
-    settingsButton.setSize(Vector2f(200, 50));
-    settingsButton.setFillColor(Color::Transparent);
-    settingsButton.setOutlineThickness(4);
-    settingsButton.setOutlineColor(Color::White);
-    settingsButton.setPosition(Vector2f(550, 350));
+    volText.setFont(font);
+    volText.setString("Volume");
+    volText.setCharacterSize(32);
+    volText.setFillColor(Color::White);
+    volText.setPosition(Vector2f(370, 325));
+    volText.setOutlineColor(sf::Color::Magenta);
+    volText.setOutlineThickness(4);
 
-    settingsText.setFont(font);
-    settingsText.setString("Settings");
-    settingsText.setCharacterSize(32);
-    settingsText.setFillColor(Color::White);
-    settingsText.setPosition(Vector2f(575, 355));
-    settingsText.setOutlineColor(sf::Color::Magenta);
-    settingsText.setOutlineThickness(4);
+// Set up volume slider
+    volumeSlider.setSize(sf::Vector2f(200.0f, 10.0f));
+    volumeSlider.setPosition(sf::Vector2f(350.0f, 380.0f));
+    volumeSlider.setFillColor(sf::Color::Transparent);
+    volumeSlider.setOutlineColor(sf::Color::Magenta);
+    volumeSlider.setOutlineThickness(4);
+
+// Set up volume handle
+    volumeHandle.setSize(sf::Vector2f(10.0f, 10.0f));
+    volumeHandle.setFillColor(sf::Color::White);
+    volumeHandle.setPosition(sf::Vector2f(540.0f, 380.0f));
 
 // Set up exit button
     exitButton.setSize(Vector2f(200, 50));
@@ -88,8 +115,32 @@ void MenuScene::Load() {
     exitText.setOutlineColor(sf::Color::Magenta);
     exitText.setOutlineThickness(4);
 
+// Set up mute button
+    muteButton.setSize(sf::Vector2f(200.0f, 50.0f));
+    muteButton.setPosition(sf::Vector2f(750.0f, 350.0f));
+    muteButton.setFillColor(sf::Color::Transparent);
+    muteButton.setOutlineColor(sf::Color::White);
+    muteButton.setOutlineThickness(4);
+
+    muteText.setFont(font);
+    muteText.setString("Mute");
+    muteText.setCharacterSize(32);
+    muteText.setFillColor(Color::White);
+    muteText.setPosition(Vector2f(810, 355));
+    muteText.setOutlineColor(sf::Color::Magenta);
+    muteText.setOutlineThickness(4);
+
+// Load background music file into music object
+    bgm.openFromFile("res/audio/bm.wav");
+
+// Set initial volume and mute state
+    bgm.setVolume(volume);
+    setMute(isMuted);
+
+// Start playing background music
+    bgm.play();
+
     setLoaded(true);
-    BackGroundMusic::playAudio("res/audio/bm.wav");
 }
 
 void MenuScene::Update(const double& dt) {
@@ -107,24 +158,44 @@ void MenuScene::Update(const double& dt) {
         playButton.setFillColor(originalColor);
     }
 
-// Check if the settings button is hovered over
-    if (settingsButton.getGlobalBounds().contains(Vector2f (static_cast<float>(Mouse::getPosition(Engine::GetWindow()).x), static_cast<float>(Mouse::getPosition(Engine::GetWindow()).y)))) {
+// Check if the volume slider is hovered over
+    if (volumeSlider.getGlobalBounds().contains(Vector2f (static_cast<float>(Mouse::getPosition(Engine::GetWindow()).x), static_cast<float>(Mouse::getPosition(Engine::GetWindow()).y)))) {
 
-
-        settingsButton.setFillColor(sf::Color::Magenta);
-
-        // Check if the settings button is clicked
+        // Check if the volume handle is being dragged
         if (Mouse::isButtonPressed(Mouse::Left)) {
-            // TODO: Open settings scene
+            // Update the position of the volume handle based on the mouse position
+            volumeHandle.setPosition(sf::Vector2f(static_cast<float>(Mouse::getPosition(Engine::GetWindow()).x), volumeSlider.getPosition().y));
+
+            // Clamp the position of the volume handle to the bounds of the volume slider
+            if (volumeHandle.getPosition().x < volumeSlider.getPosition().x) {
+                volumeHandle.setPosition(sf::Vector2f(volumeSlider.getPosition().x, volumeSlider.getPosition().y));
+            }
+            else if (volumeHandle.getPosition().x > volumeSlider.getPosition().x + volumeSlider.getSize().x - volumeHandle.getSize().x) {
+                volumeHandle.setPosition(sf::Vector2f(volumeSlider.getPosition().x + volumeSlider.getSize().x - volumeHandle.getSize().x, volumeSlider.getPosition().y));
+            }
+
+            // Update the volume based on the position of the volume handle
+            volume = (volumeHandle.getPosition().x - volumeSlider.getPosition().x) / (volumeSlider.getSize().x - volumeHandle.getSize().x) * 100.0f;
+            bgm.setVolume(volume);
+        }
+    }
+
+// Check if the mute button is hovered over
+    if (muteButton.getGlobalBounds().contains(Vector2f (static_cast<float>(Mouse::getPosition(Engine::GetWindow()).x), static_cast<float>(Mouse::getPosition(Engine::GetWindow()).y)))) {
+
+        muteButton.setFillColor(sf::Color::Magenta);
+
+        // Check if the mute button is clicked
+        if (Mouse::isButtonPressed(Mouse::Left)) {
+            setMute(!isMuted);
         }
     }
     else {
-        settingsButton.setFillColor(originalColor);
+        muteButton.setFillColor(originalColor);
     }
 
 // Check if the exit button is hovered over
     if (exitButton.getGlobalBounds().contains(Vector2f (static_cast<float>(Mouse::getPosition(Engine::GetWindow()).x), static_cast<float>(Mouse::getPosition(Engine::GetWindow()).y)))) {
-
 
         exitButton.setFillColor(sf::Color::Magenta);
 
@@ -137,21 +208,27 @@ void MenuScene::Update(const double& dt) {
         exitButton.setFillColor(originalColor);
     }
 
-    Scene::Update(dt);
-
+// Update mute button text to reflect current mute state
+    if (isMuted) {
+        muteText.setString("Unmute");
+    } else {
+        muteText.setString("Mute");
+    }
 }
 
 void MenuScene::Render() {
     Engine::GetWindow().draw(titleText);
     Engine::GetWindow().draw(playButton);
     Engine::GetWindow().draw(playText);
-    Engine::GetWindow().draw(settingsButton);
-    Engine::GetWindow().draw(settingsText);
     Engine::GetWindow().draw(exitButton);
     Engine::GetWindow().draw(exitText);
-    Scene::Render();
-
+    Engine::GetWindow().draw(volumeSlider);
+    Engine::GetWindow().draw(volumeHandle);
+    Engine::GetWindow().draw(muteButton);
+    Engine::GetWindow().draw(muteText);
+    Engine::GetWindow().draw(volText);
 }
+
 
 void MenuScene::UnLoad() {
     cout << "Menu Unload \n";
