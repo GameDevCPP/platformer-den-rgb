@@ -134,10 +134,20 @@ void Level1Scene::makePlayer(shared_ptr<Entity> &p){
         p->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
         p->addTag("player2");
     }
-    auto s = p->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-    s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(Vector2f(10.f, 10.f));
+
+    // Load the sprite for the player
+    auto sprite = p->addComponent<SpriteComponent>();
+    auto texture = make_shared<sf::Texture>();
+    if (!texture->loadFromFile("res/sprites/player.png")) {
+        // Error loading the texture
+        std::cout << "Error loading player texture" << std::endl;
+        exit(1);
+    }
+
+// Set the texture on the sprite
+    sprite->setTexture(texture);
+    sprite->getSprite().setScale(Vector2f (1.0f/2, 1.0f/2));
+    sprite->getSprite().setOrigin(Vector2f(15.f,15.f));
     p->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
 }
 

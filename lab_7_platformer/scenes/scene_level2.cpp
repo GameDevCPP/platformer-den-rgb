@@ -31,52 +31,9 @@ void Level2Scene::Load() {
       makePlayer(player2);
   }
 
-  // Create Enemy
 
 
-  // Create Turret
-  {
-      int numEnemyTiles = ls::findTiles(ls::ENEMY).size();
-      for (int i = 0; i <numEnemyTiles; i++) {
-          auto turret = makeEntity();
-
-          // Set the position of the enemy to the position of the ENEMY[i] tile
-          // plus an offset of (20, 0)
-          turret->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[i]) +
-                              Vector2f(0, 25));
-
-          auto s = turret->addComponent<ShapeComponent>();
-          s->setShape<sf::CircleShape>(20.f, 4);
-          s->getShape().setFillColor(Color::Yellow);
-          s->getShape().setOrigin(Vector2f(20.f, 20.f));
-
-          turret->addComponent<EnemyTurretComponent>();
-          turret->addComponent<HurtComponent>();
-      }
-
-
-  }
-
-    {
-        int numEnemyTiles = ls::findTiles(ls::ENEMY).size();
-        for (int i = 0; i < numEnemyTiles; i++) {
-            auto enemy = makeEntity();
-
-            // Set the position of the enemy to the position of the ENEMY[i] tile
-            // plus an offset of (0, 24)
-            enemy->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[i]) +
-                               Vector2f(0, 24));
-            enemy->addComponent<EnemyAIComponent>();
-            enemy->addComponent<HurtComponent>();
-            enemy->addComponent<PhysicsComponent>(false, Vector2f(16.f, 16.f));
-            auto e = enemy->addComponent<ShapeComponent>();
-            e->setShape<sf::CircleShape>(16.f);
-            e->getShape().setFillColor(Color::Red);
-            e->getShape().setOrigin(Vector2f(16.f, 16.f));
-        }
-    }
-
-  // Add physics colliders to level tiles.
+  // Add Enemy.
     {
         int numEnemyTiles = ls::findTiles(ls::ENEMY).size();
         for (int i = 0; i <numEnemyTiles; i++) {
@@ -225,10 +182,20 @@ void Level2Scene::makePlayer(shared_ptr<Entity> &p){
         p->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
         p->addTag("player2");
     }
-    auto s = p->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(20.f, 20.f));
-    s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(Vector2f(10.f, 10.f));
+
+    // Load the sprite for the player
+    auto sprite = p->addComponent<SpriteComponent>();
+    auto texture = make_shared<sf::Texture>();
+    if (!texture->loadFromFile("res/sprites/player.png")) {
+        // Error loading the texture
+        std::cout << "Error loading player texture" << std::endl;
+        exit(1);
+    }
+
+// Set the texture on the sprite
+    sprite->setTexture(texture);
+    sprite->getSprite().setScale(Vector2f (1.0f/2, 1.0f/2));
+    sprite->getSprite().setOrigin(Vector2f(15.f,15.f));
     p->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
 }
 
