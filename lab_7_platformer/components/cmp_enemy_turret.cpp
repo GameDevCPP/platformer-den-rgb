@@ -34,7 +34,7 @@ void EnemyTurretComponent::fire() {
         auto bullet = getBullet();
 // Set the position of the bullet object
         bullet->setPosition(_parent->getPosition());
-        bullet->addComponent<HurtComponent>();
+//        bullet->addComponent<HurtComponent>();
         // Add the PhysicsComponent to the bullet object and set its properties
         auto p = bullet->addComponent<PhysicsComponent>(true, Vector2f(8.f, 8.f));
         p->setRestitution(.4f);
