@@ -11,4 +11,6 @@ public:
   void Update(const double& dt) override;
 
   void Render() override;
+
+  void makePlayer(std::shared_ptr<Entity> &p);
 };

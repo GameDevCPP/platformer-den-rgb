@@ -50,12 +50,14 @@ protected:
   bool _fordeletion; // should be deleted
   std::set<std::string> _tags;
 
+
 public:
   void addTag(const std::string& t);
   const std::set<std::string>& getTags() const;
   Scene* const scene;
   Entity(Scene* const s);
 
+  static std::vector<std::shared_ptr<Entity>> getEntities();
   virtual ~Entity();
 
   virtual void update(double dt);
@@ -116,4 +118,5 @@ public:
     }
     return ret;
   }
+
 };

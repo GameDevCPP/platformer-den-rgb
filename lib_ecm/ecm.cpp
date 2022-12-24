@@ -33,6 +33,8 @@ void Entity::render() {
   }
 }
 
+
+
 const sf::Vector2f& Entity::getPosition() const { return _position; }
 
 void Entity::setPosition(const sf::Vector2f& _position) {
@@ -78,6 +80,13 @@ Entity::~Entity() {
   }
 
   _components.clear();
+}
+
+
+std::vector<std::shared_ptr<Entity>> Entity::getEntities() {
+    vector<shared_ptr<Entity>> entities;
+    // Add code here to populate the vector with shared pointers to the Entity objects
+    return entities;
 }
 
 Component::~Component() {}

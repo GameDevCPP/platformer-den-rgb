@@ -2,6 +2,7 @@
 #include "system_physics.h"
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
+#include "../components/SoundEffects.h"
 
 using namespace std;
 using namespace sf;
@@ -38,10 +39,10 @@ void PlayerPhysicsComponent::update(double dt) {
     teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
   }
 
-  if (Keyboard::isKeyPressed(Keyboard::Left) ||
-      Keyboard::isKeyPressed(Keyboard::Right)) {
+  if (Keyboard::isKeyPressed(Keyboard::A) ||
+      Keyboard::isKeyPressed(Keyboard::D)) {
     // Moving Either Left or Right
-    if (Keyboard::isKeyPressed(Keyboard::Right)) {
+    if (Keyboard::isKeyPressed(Keyboard::D)) {
       if (getVelocity().x < _maxVelocity.x)
         impulse({(float)(dt * _groundspeed), 0});
     } else {
@@ -54,12 +55,14 @@ void PlayerPhysicsComponent::update(double dt) {
   }
 
   // Handle Jump
-  if (Keyboard::isKeyPressed(Keyboard::Up)) {
+  if (Keyboard::isKeyPressed(Keyboard::Space)) {
     _grounded = isGrounded();
     if (_grounded) {
       setVelocity(Vector2f(getVelocity().x, 0.f));
-      teleport(Vector2f(pos.x, pos.y - 2.0f));
+      teleport(Vector2f(pos.x, pos.y - 27.0f));
       impulse(Vector2f(0, -6.f));
+
+      SoundEffects::play("res/audio/jump.wav");
     }
   }
 

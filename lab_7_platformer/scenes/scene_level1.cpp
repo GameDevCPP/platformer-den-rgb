@@ -1,3 +1,4 @@
+//scene_level1.cpp
 #include "scene_level1.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_sprite.h"
@@ -6,65 +7,151 @@
 #include <iostream>
 #include <thread>
 
+
 using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> player;
-
+static shared_ptr<Entity> player2;
+int endCounter1 = 0;
+int endCounter2 = 0;
 void Level1Scene::Load() {
-  cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/level_1.txt", 40.0f);
+    cout << " Scene 1 Load" << endl;
 
-  auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
-  ls::setOffset(Vector2f(0, ho));
-
-  // Create player
-  {
-    player = makeEntity();
-    player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-    auto s = player->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
-    s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(Vector2f(10.f, 15.f));
-
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
-  }
-
-  // Add physics colliders to level tiles.
-  {
-    auto walls = ls::findTiles(ls::WALL);
-    for (auto w : walls) {
-      auto pos = ls::getTilePosition(w);
-      pos += Vector2f(20.f, 20.f); //offset to center
-      auto e = makeEntity();
-      e->setPosition(pos);
-      e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+    LevelSystem::loadLevelFile("res/Level1.png", LevelSystem::_colours, 40.0f);
+    {
+        makePlayer(player);
+        makePlayer(player2);
     }
-  }
 
-  //Simulate long loading times
-  std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-  cout << " Scene 1 Load Done" << endl;
 
-  setLoaded(true);
+    // Find all WALL tiles and add physics colliders to them
+
+        // *********************************
+        auto wallTiles = LevelSystem::findTiles(LevelSystem::WALL);
+        for (auto w : wallTiles) {
+            auto pos = LevelSystem::getTilePosition(w);
+            pos += Vector2f(20.f, 20.f); //offset to center
+            auto e = makeEntity();
+            e->setPosition(pos);
+            e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+            auto sprite = e->addComponent<SpriteComponent>();
+            auto texture = make_shared<sf::Texture>();
+            if (!texture->loadFromFile("res/sprites/wall.png")) {
+                // Error loading the texture
+                std::cout << "Error loading player texture" << std::endl;
+                exit(1);
+            }
+
+// Set the texture on the sprite
+            sprite->setTexture(texture);
+            sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
+        }
+
+        auto platformTiles = LevelSystem::findTiles(LevelSystem::PLATFORM);
+        for (auto w : platformTiles) {
+            auto pos = LevelSystem::getTilePosition(w);
+            pos += Vector2f(20.f, 5.f); //offset to center
+            auto e = makeEntity();
+            e->setPosition(pos);
+            e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 20.f));
+            auto sprite = e->addComponent<SpriteComponent>();
+            auto texture = make_shared<sf::Texture>();
+            if (!texture->loadFromFile("res/sprites/platform.png")) {
+                // Error loading the texture
+                std::cout << "Error loading player texture" << std::endl;
+                exit(1);
+            }
+
+// Set the texture on the sprite
+            sprite->setTexture(texture);
+            sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
+        }
+
+    auto endTiles = LevelSystem::findTiles(LevelSystem::END);
+    for (auto w : endTiles) {
+        auto pos = LevelSystem::getTilePosition(w);
+        pos += Vector2f(20.f, 20.f); //offset to center
+        auto e = makeEntity();
+        e->setPosition(pos);
+        e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 10.f));
+        auto sprite = e->addComponent<SpriteComponent>();
+        auto texture = make_shared<sf::Texture>();
+        if (!texture->loadFromFile("res/sprites/end.png")) {
+            // Error loading the texture
+            std::cout << "Error loading player texture" << std::endl;
+            exit(1);
+        }
+
+// Set the texture on the sprite
+        sprite->setTexture(texture);
+        sprite->getSprite().setOrigin(Vector2f(20.f,10.f));
+    }
+
+    //Simulate long loading times
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    cout << " Scene 1 Load Done" << endl;
+
+    setLoaded(true);
 }
 
 void Level1Scene::UnLoad() {
-  cout << "Scene 1 Unload" << endl;
-  player.reset();
-  ls::unload();
-  Scene::UnLoad();
+    cout << "Scene 1 Unload" << endl;
+    player.reset();
+    player2.reset();
+    LevelSystem::unload();
+    Scene::UnLoad();
 }
 
 void Level1Scene::Update(const double& dt) {
 
-  if (ls::getTileAt(player->getPosition()) == ls::END) {
-    Engine::ChangeScene((Scene*)&level2);
-  }
-  Scene::Update(dt);
+    // Check if player is on an END tile and change to the next scene if they are
+    if (LevelSystem::getTileAt(player->getPosition()) == LevelSystem::END ) {
+        endCounter1=1;
+    }else{
+        endCounter1=0;
+    }
+
+    if (LevelSystem::getTileAt(player2->getPosition()) == LevelSystem::END ) {
+        endCounter2=1;
+    }else{
+        endCounter2=0;
+    }
+
+    if (endCounter1 + endCounter2 >=2) {
+        Engine::ChangeScene((Scene*)&level2);
+    }
+    Scene::Update(dt);
+}
+
+void Level1Scene::makePlayer(shared_ptr<Entity> &p){
+    if (p == player) {
+        p= makeEntity();
+        p->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+        p->addTag("player");
+    } else if (p == player2){
+        p= makeEntity();
+        p->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[1]));
+        p->addTag("player2");
+    }
+
+    // Load the sprite for the player
+    auto sprite = p->addComponent<SpriteComponent>();
+    auto texture = make_shared<sf::Texture>();
+    if (!texture->loadFromFile("res/sprites/player.png")) {
+        // Error loading the texture
+        std::cout << "Error loading player texture" << std::endl;
+        exit(1);
+    }
+
+// Set the texture on the sprite
+    sprite->setTexture(texture);
+    sprite->getSprite().setScale(Vector2f (1.0f/2, 1.0f/2));
+    sprite->getSprite().setOrigin(Vector2f(15.f,15.f));
+    p->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 20.f));
 }
 
 void Level1Scene::Render() {
-  ls::render(Engine::GetWindow());
-  Scene::Render();
+    LevelSystem::render(Engine::GetWindow());
+    Scene::Render();
 }
